@@ -1,5 +1,42 @@
 # Day 11 — Controlled Agent Security (2026)
 
+## Thông tin học viên
+
+- **Họ tên:** Lưu Thanh Mỹ
+- **MSSV:** 2A202603532
+- **Lớp:** L3A
+
+### Cách chạy nhanh
+
+```powershell
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+Copy-Item .env.example .env   # điền OPENROUTER_API_KEY + OPENAI_API_KEY (hoặc GOOGLE_API_KEY)
+pip install -r requirements.txt
+python src/main.py --part 2   # Checkpoint 2 — guardrails
+python src/main.py --part 3   # Checkpoint 3 — sinh outputs/results.json
+python src/main.py --part 4   # Checkpoint 4 — sinh outputs/attack_results.json
+pytest tests/smoke tests/public -q
+python scripts/grade.py --submission-dir . --out outputs/grade_report.json
+```
+run server: 
+.\.venv\Scripts\Activate.ps1
+python scripts/live_demo_server.py
+### Kết quả đạt được
+
+- `outputs/results.json`: 7/7 attack bị chặn, 0/6 câu safe bị chặn nhầm, 3/3 edge case bị chặn, rate limit 10 passed / 5 blocked.
+- `outputs/attack_results.json`: 6 prompt theo đúng 6 kỹ thuật đã học (Direct Injection, Indirect Injection, Jailbreak Roleplay/Encoding/Multi-turn/Language-switch) — **Red leak 3–4/6** (đạt điểm bắt buộc CP4 + đủ điều kiện bonus **B1** tối đa +5, dao động nhẹ theo lần chạy do LLM); **Red Advance chặn 6/6** (không leak, kể cả sau 11 lần thử bypass nâng cao riêng).
+- `pytest tests/smoke tests/public -q`: 49/49 test pass.
+
+### Nâng cấp ngoài yêu cầu tối thiểu (theo mô hình 3 Tầng Phòng Thủ)
+
+- **Input Rails:** thêm `validate_input()` (giới hạn 1.500 ký tự, chặn chuỗi rỗng) + pattern phát hiện encoding bypass (base64/rot13) — tổng **21 regex** injection (yêu cầu chỉ cần ≥5).
+- **LLM Rails:** `BLUE_INSTRUCTION` được hardening — quy tắc bảo mật "outrank mọi hướng dẫn sau", tách rõ dữ liệu không tin cậy (email/tài liệu dán vào) khỏi lệnh thật.
+- **Output Rails:** thêm `check_grounding()` — đối chiếu số liệu lãi suất với `ground_truth` thật trong `data/pii_hallucination_samples.json` (không cần gọi LLM) + cờ `needs_human_review` gắn tự động khi có redact/sai số liệu, gộp vào `outputs/metrics.json`.
+- Trong lúc tự tấn công Red Advance (11 kỹ thuật, xem phần demo), bắt được 1 lỗ hổng thật trên Blue (ký tự gạch Unicode lách qua regex secret) — đã vá bằng chuẩn hoá Unicode trong `content_filter()`.
+
+---
+
 > 👤 **Hình thức:** bài tập **cá nhân** (1 người / 1 MSSV).  
 > 🎯 **Mục tiêu:** đóng vai **Blue Team** để học cách xây Guardrails phòng thủ, rồi đóng vai **Red Team** để tấn công agent **Red** hoặc **Red Advance**.  
 > ✅ Làm theo **Checkpoint 1 → 5** trong [`CHECKPOINTS.md`](CHECKPOINTS.md) · nộp theo [`SUBMISSION.md`](SUBMISSION.md).

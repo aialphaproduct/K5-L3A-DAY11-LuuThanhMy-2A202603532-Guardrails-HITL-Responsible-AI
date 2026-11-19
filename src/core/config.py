@@ -268,12 +268,21 @@ ALLOWED_TOPICS = [
     "banking", "account", "transaction", "transfer",
     "loan", "interest", "savings", "credit",
     "deposit", "withdrawal", "balance", "payment",
+    # Tiếng Việt không dấu (giữ để tương thích)
     "tai khoan", "giao dich", "tiet kiem", "lai suat",
     "chuyen tien", "the tin dung", "so du", "vay",
     "ngan hang", "atm",
+    # Tiếng Việt có dấu
+    "tài khoản", "giao dịch", "tiết kiệm", "lãi suất",
+    "chuyển tiền", "thẻ tín dụng", "số dư", "khoản vay",
+    "ngân hàng", "thanh toán", "rút tiền", "gửi tiền",
+    "mở thẻ", "sao kê", "phí dịch vụ",
 ]
 
 BLOCKED_TOPICS = [
     "hack", "exploit", "weapon", "drug", "illegal",
     "violence", "gambling", "bomb", "kill", "steal",
+    # Tiếng Việt có dấu
+    "vũ khí", "ma túy", "bất hợp pháp", "bạo lực",
+    "cờ bạc", "bom", "giết", "trộm cắp",
 ]
